@@ -1,0 +1,32 @@
+{
+  "name": "pizza-project",
+  "version": "1.0.2",
+  "description": "pizza node js project",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index",
+    "lint": "eslint . --fix"
+  },
+  "type": "module",
+  "keywords": [
+    "node",
+    "app"
+  ],
+  "author": "Maksim Leskin <maksim.leskin@methed.ru>",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "nodemon": "^3.1.0",
+    "prettier": "3.2.5"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
