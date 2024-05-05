@@ -1,3 +1,27 @@
 [
-  
+  {
+    "id": "367eb690-bb4d-4aca-af87-11058a0d0c47",
+    "buyer": {
+      "name": "Иван Иванов",
+      "phone": "1234567890"
+    },
+    "recipient": {
+      "name": "Мария Петрова",
+      "phone": "0987654321"
+    },
+    "address": "ул. Советская, дом 10, кв 15",
+    "paymentOnline": true,
+    "deliveryDate": "2023-10-05",
+    "deliveryTime": "с 9:00 до 12:00",
+    "products": [
+      {
+        "id": 1,
+        "quantity": 2
+      },
+      {
+        "id": 2,
+        "quantity": 3
+      }
+    ]
+  }
 ]
