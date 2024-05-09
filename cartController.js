@@ -1,101 +1,71 @@
-import { fileURLToPath } from 'url';
-import path from 'path';
-import fs from 'node:fs/promises';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { readFile, writeFile } from 'node:fs/promises';
+import { randomUUID } from 'crypto';
+
+const CART_FILE = 'cart.json';
+
+async function readCartData() {
+  try {
+    const data = await readFile(CART_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error reading the cart file:', error);
+    return {};
+  }
+}
+
+async function writeCartData(data) {
+  console.log('data: ', data);
+  try {
+    await writeFile(CART_FILE, JSON.stringify(data, null, 2), 'utf8');
+  } catch (error) {
+    console.error('Error writing the cart file:', error);
+  }
+}
 
 export const setupCartRoutes = app => {
-  app.get('/api/users/accessKey', async (req, res) => {
-    const accessKey =
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
-    const userCart = {
-      accessKey,
-      products: [],
-    };
+  app.post('/api/cart/register', async (req, res) => {
+    const carts = await readCartData();
+    const accessKey = randomUUID();
+    carts[accessKey] = { items: [] };
 
-    const filepath = path.join(__dirname, 'userCart.json');
-
-    try {
-      const data = await fs.readFile(filepath, 'utf-8');
-      const carts = JSON.parse(data || '[]');
-      carts.push(userCart);
-
-      await fs.writeFile(filepath, JSON.stringify(carts, null, 2), 'utf-8');
-
-      res.cookie('accessKey', accessKey, {
-        maxAge: 604800000,
-        httpOnly: true,
-        path: '/',
-        secure: false,
-        sameSite: 'None',
-      });
-
-      res.json({ accessKey });
-    } catch (err) {
-      console.error('Failed to generate access key:', err);
-      res.status(500).json({ message: 'Error processing request' });
-    }
+    await writeCartData(carts);
+    res.cookie('accessKey', accessKey, { httpOnly: true });
+    res.json({ accessKey });
   });
 
   app.get('/api/cart', async (req, res) => {
     const accessKey = req.cookies.accessKey;
+    console.log('accessKey: ', accessKey);
     if (!accessKey) {
-      return res.status(401).json({ message: 'No access key provided' });
+      return res.status(401).json({ error: 'Access denied' });
     }
 
-    const filepath = path.join(__dirname, 'userCart.json');
-    try {
-      const data = await fs.readFile(filepath, 'utf-8');
-      const carts = JSON.parse(data || '[]');
-      const userCart = carts.find(cart => cart.accessKey === accessKey);
-
-      if (!userCart) {
-        return res.status(404).json({ message: 'Cart not found' });
-      }
-
-      res.json(userCart);
-    } catch (err) {
-      console.error('Error reading cart:', err);
-      res.status(500).json({ message: 'Failed to get cart' });
+    const carts = await readCartData();
+    const cart = carts[accessKey];
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found' });
     }
+
+    res.json(cart);
   });
 
-  app.post('/api/cart/products', async (req, res) => {
+  app.post('/api/cart/items', async (req, res) => {
     const accessKey = req.cookies.accessKey;
     if (!accessKey) {
-      return res.status(401).json({ message: 'No access key provided' });
+      return res.status(401).json({ error: 'Access denied' });
+    }
+
+    const carts = await readCartData();
+    const cart = carts[accessKey];
+    if (!cart) {
+      return res.status(404).json({ error: 'Cart not found' });
     }
 
     const { productId, quantity } = req.body;
-    if (!productId || quantity <= 0) {
-      return res.status(400).json({ message: 'Invalid product data' });
-    }
+    const item = { productId, quantity };
+    cart.items.push(item);
 
-    const filepath = path.join(__dirname, 'userCart.json');
-    try {
-      const data = await fs.readFile(filepath, 'utf-8');
-      const carts = JSON.parse(data || '[]');
-      const userCart = carts.find(cart => cart.accessKey === accessKey);
-
-      if (!userCart) {
-        return res.status(404).json({ message: 'Cart not found' });
-      }
-
-      const productIndex = userCart.products.findIndex(
-        product => product.id === productId,
-      );
-      if (productIndex >= 0) {
-        userCart.products[productIndex].quantity += quantity;
-      } else {
-        userCart.products.push({ id: productId, quantity });
-      }
-
-      await fs.writeFile(filepath, JSON.stringify(carts, null, 2), 'utf-8');
-      res.json({ message: 'Product added to cart', cart: userCart });
-    } catch (err) {
-      console.error('Error updating cart:', err);
-      res.status(500).json({ message: 'Failed to update cart' });
-    }
+    await writeCartData(carts);
+    res.json({ message: 'Item added to cart', cart });
   });
 };

@@ -1,4 +1,3 @@
-// productController.js
 import { loadData } from './dataService.js';
 import {
   filterBySearch,
@@ -13,14 +12,11 @@ const setupProductRoutes = app => {
       const { type, minPrice, maxPrice, search, list, category } = req.query;
       const allProducts = [].concat(...Object.values(data));
 
-      // Проверка на предоставление параметров minPrice, maxPrice или category без type
       if ((minPrice || maxPrice || category) && !type) {
-        return res
-          .status(400)
-          .json({
-            error:
-              "Parameters 'minPrice', 'maxPrice', 'category' require 'type' to be specified",
-          });
+        return res.status(400).json({
+          error:
+            "Parameters 'minPrice', 'maxPrice', 'category' require 'type' to be specified",
+        });
       }
 
       if (list) {
