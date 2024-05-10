@@ -1,6 +1,48 @@
 {
   "bouquets": [
     {
+      "id": 38,
+      "name": "Букет из тюльпан Dolche vita (51 шт)",
+      "categories": ["Монобукеты", "WoW Эффект"],
+      "price": 6700,
+      "photoUrl": "/img/38.jpg"
+    },
+    {
+      "id": 39,
+      "name": "Букет из роз Grand Avalanche (101 шт)",
+      "categories": ["Монобукеты", "WoW Эффект"],
+      "price": 14800,
+      "photoUrl": "/img/39.jpg"
+    },
+    {
+      "id": 40,
+      "name": "Букет из роз Grand Vanilla Cream (101 шт)",
+      "categories": ["Монобукеты", "WoW Эффект"],
+      "price": 19800,
+      "photoUrl": "/img/40.jpg"
+    },
+    {
+      "id": 41,
+      "name": "Букет из роз Grand Mirabel (101 шт)",
+      "categories": ["Монобукеты", "WoW Эффект"],
+      "price": 21300,
+      "photoUrl": "/img/41.jpg"
+    },
+    {
+      "id": 42,
+      "name": "Букет 101 Эквадорская роза микс",
+      "categories": ["Монобукеты", "WoW Эффект"],
+      "price": 14200,
+      "photoUrl": "/img/42.jpg"
+    },
+    {
+      "id": 43,
+      "name": "Букет Mona Lisa (Дельфиниум)",
+      "categories": ["Монобукеты", "WoW Эффект"],
+      "price": 13600,
+      "photoUrl": "/img/43.jpg"
+    },
+    {
       "id": 1,
       "name": "Авторский букет из роз, диантусов и сухоцветов",
       "categories": ["Авторские букеты", "Букеты из сухоцветов"],
