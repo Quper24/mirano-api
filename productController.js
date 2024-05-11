@@ -28,6 +28,7 @@ const setupProductRoutes = app => {
       if (search) {
         console.log('Search query:', search);
         const filteredProducts = filterBySearch(allProducts, search);
+        console.log('filteredProducts: ', filteredProducts);
         return res.json(filteredProducts);
       }
 

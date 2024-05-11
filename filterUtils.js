@@ -1,8 +1,29 @@
-// filterUtils.js
+import stemmer from 'snowball-stemmers';
+
+const ruStemmer = stemmer.newStemmer('russian');
+
+const removePunctuation = text =>
+  text.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g, '');
+
+const normalizeAndStem = text => {
+  return removePunctuation(text)
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.trim())
+    .filter(word => word.length > 0)
+    .map(word => ruStemmer.stem(word));
+};
+
 const filterBySearch = (products, searchQuery) => {
-  return products.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const searchWords = normalizeAndStem(searchQuery);
+
+  return products.filter(product => {
+    const productWords = normalizeAndStem(product.name);
+
+    return searchWords.every(searchWord =>
+      productWords.some(productWord => productWord.includes(searchWord)),
+    );
+  });
 };
 
 const filterByIds = (products, idList) => {
