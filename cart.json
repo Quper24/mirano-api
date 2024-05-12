@@ -1,1 +1,14 @@
-{}
+{
+  "520e1b15-94e3-42a2-ae16-135b0a77186e": {
+    "items": [
+      {
+        "productId": 2,
+        "quantity": 4
+      },
+      {
+        "productId": 16,
+        "quantity": 2
+      }
+    ]
+  }
+}

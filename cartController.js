@@ -1,55 +1,40 @@
-import { readFile, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'crypto';
-
-const CART_FILE = 'cart.json';
-
-async function readCartData() {
-  try {
-    const data = await readFile(CART_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    console.error('Error reading the cart file:', error);
-    return {};
-  }
-}
-
-async function writeCartData(data) {
-  console.log('data: ', data);
-  try {
-    await writeFile(CART_FILE, JSON.stringify(data, null, 2), 'utf8');
-  } catch (error) {
-    console.error('Error writing the cart file:', error);
-  }
-}
+import {
+  readCartData,
+  writeCartData,
+  updateCartWithProductInfo,
+} from './cartUtils.js';
 
 export const setupCartRoutes = app => {
   app.post('/api/cart/register', async (req, res) => {
     const carts = await readCartData();
-    const accessKey = randomUUID();
-    carts[accessKey] = { items: [] };
+    const accessKey = req.cookies.accessKey;
 
-    await writeCartData(carts);
-    res.cookie('accessKey', accessKey, { httpOnly: true });
-    res.json({ accessKey });
+    if (accessKey && carts[accessKey]) {
+      res.json({ accessKey, message: 'Existing cart key reused.' });
+    } else {
+      const newAccessKey = randomUUID();
+      carts[newAccessKey] = { items: [] };
+      await writeCartData(carts);
+      res.cookie('accessKey', newAccessKey, { httpOnly: true, path: '/' });
+      res.json({ accessKey: newAccessKey });
+    }
   });
 
   app.get('/api/cart', async (req, res) => {
     const accessKey = req.cookies.accessKey;
-    console.log('accessKey: ', accessKey);
-    if (!accessKey) {
-      return res.status(401).json({ error: 'Access denied' });
-    }
+    if (!accessKey) return res.status(401).json({ error: 'Access denied' });
 
     const carts = await readCartData();
     const cart = carts[accessKey];
-    if (!cart) {
-      return res.status(404).json({ error: 'Cart not found' });
-    }
+    if (!cart) return res.status(404).json({ error: 'Cart not found' });
 
-    res.json(cart);
+    const cartItems = await updateCartWithProductInfo(cart);
+    res.json(cartItems);
   });
 
   app.post('/api/cart/items', async (req, res) => {
+    const { productId, quantity } = req.body;
     const accessKey = req.cookies.accessKey;
     if (!accessKey) {
       return res.status(401).json({ error: 'Access denied' });
@@ -61,11 +46,32 @@ export const setupCartRoutes = app => {
       return res.status(404).json({ error: 'Cart not found' });
     }
 
-    const { productId, quantity } = req.body;
-    const item = { productId, quantity };
-    cart.items.push(item);
+    const itemIndex = cart.items.findIndex(
+      item => item.productId === productId,
+    );
 
-    await writeCartData(carts);
-    res.json({ message: 'Item added to cart', cart });
+    if (quantity <= 0) {
+      // Если количество равно 0 или меньше, удаляем товар из корзины
+      if (itemIndex !== -1) {
+        cart.items.splice(itemIndex, 1);
+        await writeCartData(carts);
+      } else {
+        res.status(404).json({ error: 'Product not found in cart' });
+        return; // Выходим, чтобы не выполнить последующий код
+      }
+    } else {
+      // Обновляем или добавляем новый товар в корзину
+      if (itemIndex > -1) {
+        cart.items[itemIndex].quantity = quantity;
+      } else {
+        const newItem = { productId, quantity };
+        cart.items.push(newItem);
+      }
+      await writeCartData(carts);
+    }
+
+    // Возвращаем обновленный список товаров в корзине с дополнительной информацией
+    const updatedCartItems = await updateCartWithProductInfo(cart);
+    res.json(updatedCartItems);
   });
 };
