@@ -16,7 +16,12 @@ export const setupCartRoutes = app => {
       const newAccessKey = randomUUID();
       carts[newAccessKey] = { items: [] };
       await writeCartData(carts);
-      res.cookie('accessKey', newAccessKey, { httpOnly: true, path: '/' });
+      res.cookie('accessKey', newAccessKey, {
+        httpOnly: true,
+        path: '/',
+        secure: true,
+        sameSite: 'None',
+      });
       res.json({ accessKey: newAccessKey });
     }
   });

@@ -47,7 +47,12 @@ export const setupOrderRoutes = app => {
     }
 
     const newAccessKey = randomUUID();
-    res.cookie('accessKey', newAccessKey, { httpOnly: true, path: '/' });
+    res.cookie('accessKey', newAccessKey, {
+      httpOnly: true,
+      path: '/',
+      secure: true,
+      sameSite: 'None',
+    });
     carts[newAccessKey] = { items: [] };
     await writeCartData(carts);
 
