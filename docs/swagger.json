@@ -1,0 +1,420 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Mirano API",
+    "version": "1.0.0",
+    "description": "API documentation for Mirano project"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local server"
+    }
+  ],
+  "paths": {
+    "/products": {
+      "get": {
+        "summary": "Get all products",
+        "responses": {
+          "200": {
+            "description": "A list of products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "123"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Product Name"
+                      },
+                      "price": {
+                        "type": "number",
+                        "example": 19.99
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Product description"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new product",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "New Product"
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 29.99
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Description of the new product"
+                  }
+                },
+                "required": ["name", "price", "description"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product created"
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "summary": "Get a product by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The product ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single product",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "123"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Product Name"
+                    },
+                    "price": {
+                      "type": "number",
+                      "example": 19.99
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Product description"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a product by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The product ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Updated Product"
+                  },
+                  "price": {
+                    "type": "number",
+                    "example": 39.99
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Updated description"
+                  }
+                },
+                "required": ["name", "price", "description"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product updated"
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a product by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The product ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product deleted"
+          },
+          "404": {
+            "description": "Product not found"
+          }
+        }
+      }
+    },
+    "/orders": {
+      "get": {
+        "summary": "Get all orders",
+        "responses": {
+          "200": {
+            "description": "A list of orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "123"
+                      },
+                      "productIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "example": "456"
+                        }
+                      },
+                      "total": {
+                        "type": "number",
+                        "example": 59.99
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "pending"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new order",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "456"
+                    }
+                  },
+                  "total": {
+                    "type": "number",
+                    "example": 59.99
+                  },
+                  "status": {
+                    "type": "string",
+                    "example": "pending"
+                  }
+                },
+                "required": ["productIds", "total", "status"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created"
+          }
+        }
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "summary": "Get an order by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The order ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A single order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "123"
+                    },
+                    "productIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "456"
+                      }
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 59.99
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "pending"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an order by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The order ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "example": "456"
+                    }
+                  },
+                  "total": {
+                    "type": "number",
+                    "example": 59.99
+                  },
+                  "status": {
+                    "type": "string",
+                    "example": "completed"
+                  }
+                },
+                "required": ["productIds", "total", "status"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order updated"
+          },
+          "404": {
+            "description": "Order not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an order by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The order ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Order deleted"
+          },
+          "404": {
+            "description": "Order not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}
