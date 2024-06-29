@@ -1,6 +1,7 @@
 import express from 'express';
-import swaggerUi from 'swagger-ui-express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import 'express-async-errors';
 import { setupProductRoutes } from './productController.js';
@@ -17,6 +18,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cookieParser());
 app.use('/img', express.static('img'));
 
 // Read the Swagger JSON file
@@ -25,7 +27,7 @@ const swaggerDocument = JSON.parse(
 );
 
 // Middleware для документации API
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use((req, res, next) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
