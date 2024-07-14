@@ -14,16 +14,23 @@ const normalizeAndStem = text => {
     .map(word => ruStemmer.stem(word));
 };
 
-const filterBySearch = (products, searchQuery) => {
+const filterBySearch = (products, searchQuery, min, max, category) => {
   const searchWords = normalizeAndStem(searchQuery);
 
-  return products.filter(product => {
+  const filteredProducts = products.filter(product => {
     const productWords = normalizeAndStem(product.name);
 
     return searchWords.every(searchWord =>
       productWords.some(productWord => productWord.includes(searchWord)),
     );
   });
+
+  return filteredProducts.filter(
+    product =>
+      product.price >= min &&
+      product.price <= max &&
+      (!category || product.categories.includes(category)),
+  );
 };
 
 const filterByIds = (products, idList) => {
